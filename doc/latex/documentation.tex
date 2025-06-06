@@ -1,0 +1,123 @@
+\documentclass[a4paper, 11pt]{article}
+\usepackage[left=14mm, top=23mm, text={183mm, 252mm}]{geometry} % Rozměry stránky
+\usepackage[utf8]{inputenc}                                     % Kódování zdrojového souboru
+\usepackage[T1]{fontenc}                                        % Kódování výstupního souboru
+\usepackage[czech]{babel}                                       % Delení slov, typografická
+\usepackage{lmodern}                                            % Font
+\usepackage{amsthm, amssymb, amsmath}                           % Matematické výrazy
+\usepackage{hyperref}
+
+% Autor: Petr Plíhal (xpliha02@stud.fit.vutbr.cz)
+
+\begin{document}
+    
+\begin{titlepage}
+    \begin{center}
+        \textsc{
+            {\Huge 
+                Vysoké učení technické v~Brně \\ \vspace{0.5em}
+            }
+            {\huge
+                Fakulta informačních technologií
+            }
+        }
+        \vspace{\stretch{0.381966}}\\
+        {\LARGE
+            IMP -- WiFi metronom \\  \vspace{0.6em}
+            
+        }
+        
+        \vspace{\stretch{0.618034}}
+    \end{center}
+
+    {\Large
+        \today
+        \hfill
+        Petr Plíhal (xpliha02)
+    }
+\end{titlepage}
+\tableofcontents
+\newpage
+
+\section{Úvod}
+Tento dokument popisuje projekt metronomu na mikrokontroléru ESP32 do předmětu IMP. Projekt implementuje metronom s webovým rozhraním pro ovládání základních parametrů, jako jsou tempo a hlasitost.
+
+\section{Funkce}
+Metronom nabízí následující funkce:
+\begin{itemize}
+    \item Připojení k WiFi síti nebo vytvoření vlastního přístupového bodu \cite{platformio_board}.
+    \item Webový server pro ovládání metronomu \cite{esp32_manual}.
+    \item Nastavení BPM (beats per minute) v rozsahu 40--240 \cite{esp32_datasheet}.
+    \item Nastavení hlasitosti bzučáku (0--255, na stránce prezentováno jako procenta).
+    \item Možnost spuštění a zastavení metronomu \cite{d1_r32_manual}.
+\end{itemize}
+
+\section{Použitý hardware}
+\begin{itemize}
+    \item ESP32 \cite{esp32_datasheet}
+    \item Bzučák a LED připojené k pinu 23
+\end{itemize}
+
+\section{Použité knihovny a vývojové prostředí}
+Projekt byl implementován použitím rozšíření PlatformIO pro Visual Studio Code \cite{platformio_board}.
+
+Projekt využívá následující knihovny:
+\begin{itemize}
+    \item Arduino
+    \item WiFi
+    \item WebServer
+    \item driver/timer (pro práci s časovačem)
+\end{itemize}
+
+\section{Nastavení a spuštění}
+\begin{enumerate}
+    \item Zapojte bzučák (nebo LED) k pinu 23 (případně změňte pin v souboru \texttt{src/config.h}).
+    \item V souboru \texttt{src/config.cpp} nastavte:
+    \begin{itemize}
+        \item Způsob připojení: \texttt{wifi\_as\_access\_point}
+        \item Jméno a heslo přístupového bodu: \texttt{ap\_ssid}, \texttt{ap\_password}
+        \item Alternativně vyplňte jméno a heslo pro připojení k WiFi síti: \texttt{wifi\_ssid}, \texttt{wifi\_password}
+        \item Port webového serveru: \texttt{WebServer server(XX)}
+    \end{itemize}
+    \item Nahrajte kód na ESP32.
+    \item Připojte se k WiFi síti nebo vytvořenému přístupovému bodu.
+    \item V konzoli se zobrazí IP adresa, na které je dostupné webové rozhraní.
+    \item Otevřete webový prohlížeč a zadejte IP adresu.
+\end{enumerate}
+
+\section{Používání metronomu}
+\begin{itemize}
+    \item Spuštění a zastavení metronomu pomocí tlačítka \texttt{Start/Stop}.
+    \item Nastavení hlasitosti a BPM pomocí posuvných lišt nebo textových polí.
+    \item Změny na posuvné liště se projeví ihned.
+    \item Změny zadané do textového pole je třeba potvrdit tlačítkem \texttt{Nastav}.
+\end{itemize}
+
+\section{Struktura zdrojových souborů}
+\begin{itemize}
+    \item \texttt{src/main.cpp} -- hlavní smyčka a volání funkcí pro obsluhu webového serveru.
+    \item \texttt{src/config.h}, \texttt{src/config.cpp} -- konfigurační soubory pro nastavení WiFi, pinu bzučáku a portu webového serveru.
+    \item \texttt{src/timer.h}, \texttt{src/timer.cpp} -- obsluha časovače pro generování tónu.
+    \item \texttt{src/web\_server.h}, \texttt{src/web\_server.cpp} -- obsluha webového serveru, zpracování požadavků a volání funkcí.
+    \item \texttt{src/web\_pages.h}, \texttt{src/web\_pages.cpp} -- HTML stránka pro ovládání metronomu.
+\end{itemize}
+
+\section{Známé problémy}
+\begin{itemize}
+    \item Při změně BPM a hlasitosti se může stát, že se tón zastaví a znovu spustí až po uplynutí jednoho taktu.
+\end{itemize}
+
+\section{Možná vylepšení}
+\begin{itemize}
+    \item Přidání možnosti změny tónu bzučáku (BPM také ovlivňuje tón).
+    \item Přidání \uv{presets} pro různé takty (např. 4/4, 3/4, 6/8).
+    \item Zvýraznění prvního taktu hlasitějším tónem.
+\end{itemize}
+
+\section{Zdroje}
+Zde uvádím odkazy na stránky a dokumenty které jsem použil během implementace. V případě použití konkrétních úseků kódu jsem zdroje zaznačil odkazem v daných zdrojových souborech.
+
+\bibliographystyle{czechiso}
+\bibliography{references}
+
+\end{document}
